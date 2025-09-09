@@ -1,0 +1,23 @@
+service: my-test-project
+
+plugins:
+  - serverless-localstack
+
+custom:
+  localstack:
+    stages:
+      - local
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: eu-central-1
+  stage: local
+
+functions:
+  hello:
+    handler: build/index.hello
+    events:
+      - httpApi:
+          path: /
+          method: get

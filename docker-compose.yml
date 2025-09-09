@@ -1,0 +1,27 @@
+services:
+  aws:
+    image: localstack/localstack-pro
+    container_name: localstack
+    environment:
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN:?}
+      # - DEBUG=1
+    ports:
+      - '4566:4566'
+      - '4510-4559:4510-4559'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SERVERLESS_LICENSE_KEY=${SERVERLESS_LICENSE_KEY}
+      - AWS_ACCESS_KEY_ID=foobar
+      - AWS_SECRET_ACCESS_KEY=foobar
+      - AWS_ENDPOINT_URL=http://aws:4566
+      # - SLS_DEBUG=*
+    command: npm run deploy:local
+    depends_on:
+      aws:
+        condition: service_healthy
